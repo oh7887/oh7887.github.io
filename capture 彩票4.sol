@@ -30,5 +30,8 @@ function att() public payable {
   uint8 answer = uint8(keccak256(block.blockhash(block.number - 1), now));
   gues.guess{value:1 ether}(answer);
 }
-} 
+fallback() external payable
+{
 
+} 
+}
