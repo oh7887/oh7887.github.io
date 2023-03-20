@@ -33,4 +33,5 @@ contract attack
       }
     }
   }
+  fallback()  external payable{}
 }
