@@ -26,7 +26,7 @@ contract PredictTheFutureChallenge {
         require(msg.sender == guesser);
         require(block.number > settlementBlockNumber);
 
-        uint8 answer = uint8(keccak256(block.blockhash(block.number - 1), now)) % 10;
+        uint8 answer = uint8(keccak256(block.blockhash(block.number - 1), now)) % 10;///* 可以看到第二十九行代码 有一个对10取模 所以 answer一共就只有 0-9 刚好十次 猜就对了*/
 
         guesser = address(0);
         if (guess == answer) {
@@ -34,4 +34,4 @@ contract PredictTheFutureChallenge {
         }
     }
 }
-/* 可以看到第二十九行代码 有一个对10取模 所以 answer一共就只有 0-9 刚好十次 猜就对了*/
+
