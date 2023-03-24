@@ -14,8 +14,8 @@ contract attack{
   constructor() public payable{
 
   }
-  function att(address add)public payable
+  function att(address payable add)public payable
   {
-     selfdestruct(payable(add));
+     selfdestruct(add);//强制转账
   }
 }
