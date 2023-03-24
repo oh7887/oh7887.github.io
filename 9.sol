@@ -21,6 +21,6 @@ contract attack
 constructor(address add)public
 {
   Vault va = Vault(add);
-  va.unlock(0x412076657279207374726f6e67207365637265742070617373776f7264203a29);
+  va.unlock(0x412076657279207374726f6e67207365637265742070617373776f7264203a29);//查一下slot 找到password就行了
 }
 }
