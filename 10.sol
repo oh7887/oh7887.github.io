@@ -32,5 +32,5 @@ contract attack{
     function reTran(address payable add)public{
         add.transfer(address(this).balance);
     }
-
+//没有fallback函数 无法接受转账
 }
