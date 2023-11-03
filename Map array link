@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.4.21;
+
+contract Map {
+    bool public isComplete;
+    uint256[] map;
+
+    constructor(){
+
+    }
+
+    function set(uint256 key, uint256 value) public {
+        if (map.length <= key) {
+            map.length = key + 1;
+        }
+
+        map[key] = value;
+    }
+
+    function get(uint256 key) public view returns (uint256) {
+        return map[key];
+    }
+
+}
+contract Check{
+    uint256 public score;
+    Map public map;
+
+    constructor() public {
+        map = new Map();
+    }
+    
+    function isCompleted() external {
+        score = 0;
+        if(isContract(msg.sender)){
+            score += 25;
+        }
+        if(map.isComplete()){
+            score += 75;
+        }
+    }
+
+    function isContract(address addr) private view returns (bool) {
+        uint size;
+        assembly { size := extcodesize(addr) }
+        return size > 0;
+    }
+}
+contract att
+{
+    uint256 public i=2**256-1;
+    bytes32 public f4= keccak256(abi.encodePacked(uint(1))); //计算solt1的地址
+    uint public result = 2**256-1 - uint(f4) +1;//计算solt1与目标的距离
+}
+//35707666377435648211887908874984608119992236509074197713628505308453184860938
