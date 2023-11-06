@@ -91,8 +91,8 @@ uint public result = 2**256-1 - uint(f4) +1;//计算solt1与目标的距离
       
       
    function cal_addr() public view returns( uint k,bytes32 solt) {
-        uint k=0;
-        uint p=0;
+        uint k=0;//偏移量下标
+        uint p=0;//solt位置
         for(;p<10;p++){
        bytes32 res = keccak256(abi.encodePacked(k, p));
        bool succ=arr.checkTokenOfUserSlot(res, 0x0000000000000000000000000000000000000000);
