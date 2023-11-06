@@ -38,12 +38,19 @@ contract check{
 
 
 contract Create2Predictor {
+    address public add;
+    bytes32 public bycode=keccak256(type(found).creationCode);
     function predictCreate2Address(
         address creator,
         bytes32 salt
        
-    ) public pure returns (address) {
-        bytes32 input = keccak256(abi.encodePacked(uint8(0xff), creator, salt, keccak256(type(found).creationCode)));//计算地址
+    ) public returns (address) {
+        bytes32 input = keccak256(abi.encodePacked(uint8(0xff), creator, salt, keccak256(type(found).creationCode)));
+        add=address(uint160(uint256(input)));
         return address(uint160(uint256(input)));
+    }
+        function a1() public payable {
+        
+        payable(add).call{value:1 ether}("");
     }
 }
