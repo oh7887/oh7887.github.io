@@ -1,0 +1,49 @@
+pragma solidity ^0.8.0;
+
+contract found{
+    bool public resove = false;
+    
+    constructor(){
+        if(address(this).balance >= 0.001 ether){
+            resove = true;
+        }  
+    }
+    
+    function getResove() public view returns(bool){
+        return resove;
+    }
+    
+}
+
+contract check{
+    found public target;
+    uint public score;
+    
+    function depoly(bytes32 _salt) public returns(address){
+        target = new found{salt: _salt}();
+        return address(target);
+    }
+    
+    function isCompleted() public {
+        score = 0;
+        if(address(target) != address(0)){
+            score += 30;
+        }
+        if(target.getResove()){
+            score += 70;
+        }
+    }
+}
+
+
+
+contract Create2Predictor {
+    function predictCreate2Address(
+        address creator,
+        bytes32 salt
+       
+    ) public pure returns (address) {
+        bytes32 input = keccak256(abi.encodePacked(uint8(0xff), creator, salt, keccak256(type(found).creationCode)));//计算地址
+        return address(uint160(uint256(input)));
+    }
+}
