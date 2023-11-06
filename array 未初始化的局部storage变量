@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.4.26;
+contract array {
+    bool public isComplete;
+    uint public score;
+    uint[] public prime_number;
+    
+    function number_add(uint _num) public {
+        uint[] tmp;//野指针 指向solt0位置
+        tmp.push(_num);
+        prime_number=tmp;
+    }
+
+    function isCompleted() public {
+        score = 0;
+        if(isContract(msg.sender)){
+            score += 25;
+        }
+        if(isComplete){
+            score +=75;
+        }
+    }
+
+    function isContract(address addr) private view returns (bool) {
+        uint size;
+        assembly { size := extcodesize(addr) }
+        return size > 0;
+    }
+}
+contract att
+{
+    array public arr;
+    constructor(address add) public 
+    {
+        arr=array(add);
+    }
+    function a1() public {
+        arr.number_add(1);
+        arr.isCompleted();
+    }
+
+}
